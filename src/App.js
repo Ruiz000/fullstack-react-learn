@@ -1,77 +1,48 @@
-import React from "react";
+//Note
 
-const Course=({courses})=>{
-  
-  return courses.map((course)=>{
-    const name=course.name
-    const part=course.parts.map((part,index) => {
-      return <p key={index}>{part.name} {part.exercises}</p>
-  })
-    const total=course.parts.reduce((p,c)=>{
-      return p+c.exercises
-  },0)
-    return {name,part,total} 
-  }).map((item,index)=>{
-    return(
-      <div key={index}>
-      <h1>
-        {item.name}
-      </h1>
-      <div>{item.part}</div>
-      <div><h4>total of {item.total} exercises</h4></div>
-      </div>
-    )
-  })
-}
+import React,{useState} from 'react'
+import Note from './components/Note'
 
+const App =(props) => {
+    const [notes,setNotes] = useState(props.notes)
+    const [newNote,setNewNote] =useState('a new note...')
+    const [showAll,setShowAll] =useState(true)
 
-const App=()=>{
-  const courses =[
-    {
-      name: 'Half Stack application development',
-      id: 1,
-      parts: [
-        {
-          name: 'Fundamentals of React',
-          exercises: 10,
-          id: 1
-        },
-        {
-          name: 'Using props to pass data',
-          exercises: 7,
-          id: 2
-        },
-        {
-          name: 'State of a component',
-          exercises: 14,
-          id: 3
-        },
-        {
-          name: 'Redux',
-          exercises: 11,
-          id: 4
+    const addNote=(event)=>{
+        event.preventDefault()
+        const noteObject={
+            content:newNote,
+            date:new Date().toISOString(),
+            important:Math.random()<0.5,
+            id:notes.length+1
         }
-      ]
-    }, 
-    {
-      name: 'Node.js',
-      id: 2,
-      parts: [
-        {
-          name: 'Routing',
-          exercises: 3,
-          id: 1
-        },
-        {
-          name: 'Middlewares',
-          exercises: 7,
-          id: 2
-        }
-      ]
+        setNotes(notes.concat(noteObject))
+        setNewNote('')
     }
-  ]
-  return <Course courses={courses}/>
+    const handleNoteChange =(event)=>{
+        console.log(event.target.value);
+        setNewNote(event.target.value)
+    }
+    const notesToShow = showAll ? notes:notes.filter(note=>note.important) 
+    return (
+        <div>
+            <h1>Notes</h1>
+            <div>
+                <button onClick={()=> setShowAll(!showAll)}>
+                    show {showAll?'important':'all'}
+                </button>
+            </div>
+            <ul>
+                {notesToShow.map(note=>
+                    <Note key={note.id} note={note}/>
+                    )}
+            </ul>
+            <form onSubmit={addNote}>
+                <input value={newNote} onChange={handleNoteChange}/>
+                <button type='submit'>save</button>
+            </form>
+        </div>
+    )
 }
-
 
 export default App
