@@ -1,74 +1,77 @@
-import React,{useState} from 'react'
+import React from "react";
 
-const StatisticLine = (props)=>{
+const Course=({courses})=>{
   
-  return (
-    <div>
-      <p>{props.text} {props.value} {props.text === 'positive'?'%':''}</p>
-    </div>
-  )
-}
-
-const Statistics=(props)=>{
-  const good=props.good
-  const neutral=props.neutral
-  const bad=props.bad
-  if(good !==0 || neutral !== 0 || bad !== 0){
-    return (
-      <div>
-      <StatisticLine text='good' value={good}></StatisticLine>
-      <StatisticLine text='neutral' value={neutral}> </StatisticLine>
-      <StatisticLine text='bad' value={bad}> </StatisticLine>
-      <StatisticLine text='all' value={good+neutral+bad}> </StatisticLine>
-      <StatisticLine text='average' value={(good-bad)/(good+neutral+bad)}></StatisticLine>
-      <StatisticLine text='positive' value={(good/(good+neutral+bad))*100 }></StatisticLine>
-      </div>
-    )
-  }else{
+  return courses.map((course)=>{
+    const name=course.name
+    const part=course.parts.map((part,index) => {
+      return <p key={index}>{part.name} {part.exercises}</p>
+  })
+    const total=course.parts.reduce((p,c)=>{
+      return p+c.exercises
+  },0)
+    return {name,part,total} 
+  }).map((item,index)=>{
     return(
-      <div>
-      <p>No feedback given</p>
+      <div key={index}>
+      <h1>
+        {item.name}
+      </h1>
+      <div>{item.part}</div>
+      <div><h4>total of {item.total} exercises</h4></div>
       </div>
     )
-  }
-  
+  })
 }
 
-const Button =({ handleClick,text})=>{
-  return (
-  <button onClick={handleClick}>
-    {text}
-  </button>
-  )
+
+const App=()=>{
+  const courses =[
+    {
+      name: 'Half Stack application development',
+      id: 1,
+      parts: [
+        {
+          name: 'Fundamentals of React',
+          exercises: 10,
+          id: 1
+        },
+        {
+          name: 'Using props to pass data',
+          exercises: 7,
+          id: 2
+        },
+        {
+          name: 'State of a component',
+          exercises: 14,
+          id: 3
+        },
+        {
+          name: 'Redux',
+          exercises: 11,
+          id: 4
+        }
+      ]
+    }, 
+    {
+      name: 'Node.js',
+      id: 2,
+      parts: [
+        {
+          name: 'Routing',
+          exercises: 3,
+          id: 1
+        },
+        {
+          name: 'Middlewares',
+          exercises: 7,
+          id: 2
+        }
+      ]
+    }
+  ]
+  return <Course courses={courses}/>
 }
 
-const App =()=>{
-  const [good,setGood]=useState(0)
-  const [neutral,setNeutral]=useState(0)
-  const [bad,setBad]=useState(0)
 
-  const handleGoodClick=()=>{
-    setGood(good+1)
-  }
-
-  const handleBadClick=()=>{
-    setBad(bad+1)
-  }
-
-  const handleNeutralClick=()=>{
-    setNeutral(neutral+1)
-  }
-
-  return(
-    <div>
-      <h1>give feedback</h1>
-      <Button handleClick={handleGoodClick} text={'good'}></Button>
-      <Button handleClick={handleNeutralClick} text={'neutral'}></Button>
-      <Button handleClick={handleBadClick} text={'bad'}></Button>
-      <h1>statistics</h1>
-      <Statistics good={good} neutral={neutral} bad={bad}/>
-    </div>
-  )
-}
-
-export default App;
+export default App
